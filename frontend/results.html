@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results - E-Voting</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Election results</h1>
+      <p class="subtitle">Vote counts from blockchain (immutable)</p>
+    </header>
+
+    <div id="msg" class="msg" style="display: none;"></div>
+
+    <div class="card">
+      <h2>Vote counts</h2>
+      <p class="mb-1">Data is read directly from the smart contract.</p>
+      <div id="resultsContainer"></div>
+      <p id="noResults" style="display: none; color: #8892b0;">No candidates or votes yet.</p>
+    </div>
+
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="vote.html">Vote</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="contract-abi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const msgEl = document.getElementById("msg");
+    const container = document.getElementById("resultsContainer");
+    const noResults = document.getElementById("noResults");
+
+    function showMsg(text, isError) {
+      msgEl.textContent = text;
+      msgEl.className = "msg " + (isError ? "error" : "success");
+      msgEl.style.display = "block";
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    async function loadResults() {
+      try {
+        const candidates = await loadCandidates();
+        if (candidates.length === 0) {
+          container.innerHTML = "";
+          noResults.style.display = "block";
+          return;
+        }
+        noResults.style.display = "none";
+
+        let winnerId = 0;
+        let winnerVotes = 0;
+        try {
+          const w = await getWinner();
+          winnerId = w.id;
+          winnerVotes = w.votes;
+        } catch (_) {}
+
+        container.innerHTML = candidates.map((c) => {
+          const isWinner = winnerVotes > 0 && c.voteCount === winnerVotes && c.id === winnerId;
+          return `
+            <div class="result-row">
+              <span class="name">${escapeHtml(c.name)} ${isWinner ? '<span class="winner-badge">Winner</span>' : ""}</span>
+              <span class="votes">${c.voteCount} vote(s)</span>
+            </div>
+          `;
+        }).join("");
+      } catch (e) {
+        showMsg(e.message || "Could not load results. Is contract deployed and config.js set?", true);
+      }
+    }
+
+    loadResults();
+  </script>
+</body>
+</html>

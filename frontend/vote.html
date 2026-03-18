@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote - E-Voting</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Cast your vote</h1>
+      <p class="subtitle">One vote per wallet. Stored on blockchain.</p>
+    </header>
+
+    <div id="msg" class="msg" style="display: none;"></div>
+    <p class="wallet-info">Connected: <span id="walletAddr">—</span> <button type="button" class="btn btn-secondary" id="btnConnectVote" style="display: none;">Connect MetaMask</button></p>
+
+    <div class="card">
+      <h2>Candidates</h2>
+      <p class="mb-1">Connect MetaMask and select a candidate. You can vote only once.</p>
+      <ul id="candidateList" class="candidate-list"></ul>
+      <p id="noCandidates" style="display: none; color: #8892b0;">No candidates yet. Admin can add candidates from the section below.</p>
+    </div>
+
+    <div id="adminSection" class="card admin-section" style="display: none;">
+      <h3>Admin: Add candidate</h3>
+      <p class="wallet-info mb-1">Only the contract owner (deployer account) can add candidates.</p>
+      <div class="form-group">
+        <input type="text" id="newCandidateName" placeholder="Candidate name">
+      </div>
+      <button type="button" class="btn btn-primary" id="btnAddCandidate">Add candidate</button>
+    </div>
+
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="results.html">Results</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="contract-abi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const msgEl = document.getElementById("msg");
+    const listEl = document.getElementById("candidateList");
+    const noCandidatesEl = document.getElementById("noCandidates");
+    const adminSection = document.getElementById("adminSection");
+
+    function showMsg(text, isError) {
+      msgEl.textContent = text;
+      msgEl.className = "msg " + (isError ? "error" : "success");
+      msgEl.style.display = "block";
+    }
+
+    async function render() {
+      const addr = await getCurrentAccount();
+      const walletSpan = document.getElementById("walletAddr");
+      const connectBtn = document.getElementById("btnConnectVote");
+      walletSpan.textContent = addr ? addr.slice(0, 10) + "..." + addr.slice(-6) : "Not connected";
+      connectBtn.style.display = addr ? "none" : "inline-block";
+
+      if (!addr) {
+        listEl.innerHTML = "";
+        noCandidatesEl.style.display = "none";
+        adminSection.style.display = "none";
+        return;
+      }
+
+      const isAdminUser = await isOwner();
+      adminSection.style.display = isAdminUser ? "block" : "none";
+
+      try {
+        let candidates = await loadCandidates();
+        const voted = await hasCurrentUserVoted();
+
+        if (candidates.length === 0) {
+          listEl.innerHTML = "";
+          noCandidatesEl.style.display = "block";
+          return;
+        }
+        noCandidatesEl.style.display = "none";
+
+        listEl.innerHTML = candidates.map((c) => `
+          <li class="candidate-item">
+            <span class="name">${escapeHtml(c.name)}</span>
+            <span class="votes">${c.voteCount} vote(s)</span>
+            <button class="btn btn-vote" data-id="${c.id}" ${voted ? "disabled" : ""}>
+              ${voted ? "Already voted" : "Vote"}
+            </button>
+          </li>
+        `).join("");
+
+        listEl.querySelectorAll(".btn-vote").forEach((btn) => {
+          if (btn.disabled) return;
+          btn.onclick = async () => {
+            const id = parseInt(btn.dataset.id, 10);
+            if (!addr) {
+              showMsg("Connect MetaMask first.", true);
+              return;
+            }
+            btn.disabled = true;
+            try {
+              await castVote(id);
+              showMsg("Vote recorded on blockchain.", false);
+              render();
+            } catch (e) {
+              btn.disabled = false;
+              showMsg(e.message || "Vote failed. Have you already voted?", true);
+            }
+          };
+        });
+      } catch (e) {
+        showMsg(e.message || "Could not load candidates. Is contract deployed and config.js set?", true);
+      }
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement("div");
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    document.getElementById("btnConnectVote").onclick = async () => {
+      try {
+        await connectWallet();
+        render();
+      } catch (e) {
+        showMsg(e.message, true);
+      }
+    };
+
+    document.getElementById("btnAddCandidate").onclick = async () => {
+      const name = document.getElementById("newCandidateName").value.trim();
+      if (!name) {
+        showMsg("Enter candidate name.", true);
+        return;
+      }
+      try {
+        await addCandidate(name);
+        showMsg("Candidate added.", false);
+        document.getElementById("newCandidateName").value = "";
+        render();
+      } catch (e) {
+        showMsg(e.message || "Only contract owner can add candidates.", true);
+      }
+    };
+
+    getCurrentAccount().then(() => render());
+  </script>
+</body>
+</html>

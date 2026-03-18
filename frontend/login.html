@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register / Login - E-Voting</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Blockchain Secure E-Voting</h1>
+      <p class="subtitle">Register or login with your wallet</p>
+    </header>
+
+    <div id="msg" class="msg" style="display: none;"></div>
+
+    <!-- Register -->
+    <div class="card">
+      <h2>Register as voter</h2>
+      <p class="wallet-info mb-1">Connect MetaMask first, then fill the form. Your wallet address will be linked to your account.</p>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="regName">Name</label>
+          <input type="text" id="regName" required placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" required placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Wallet</label>
+          <input type="text" id="regWallet" readonly placeholder="Connect MetaMask">
+        </div>
+        <button type="button" class="btn btn-secondary mt-1" id="btnConnectReg">Connect MetaMask</button>
+        <button type="submit" class="btn btn-primary mt-1">Register</button>
+      </form>
+    </div>
+
+    <!-- Login -->
+    <div class="card">
+      <h2>Login</h2>
+      <p class="wallet-info mb-1">Connect with the wallet you used to register.</p>
+      <div class="form-group">
+        <label>Wallet</label>
+        <input type="text" id="loginWallet" readonly placeholder="Connect MetaMask">
+      </div>
+      <button type="button" class="btn btn-secondary mt-1" id="btnConnectLogin">Connect MetaMask</button>
+      <button type="button" class="btn btn-primary mt-1" id="btnLogin">Login</button>
+    </div>
+
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="vote.html">Vote</a>
+      <a href="results.html">Results</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="contract-abi.js"></script>
+  <script src="app.js"></script>
+  <script>
+    const msgEl = document.getElementById("msg");
+    function showMsg(text, isError) {
+      msgEl.textContent = text;
+      msgEl.className = "msg " + (isError ? "error" : "success");
+      msgEl.style.display = "block";
+    }
+
+    async function setWalletInputs(addr) {
+      document.getElementById("regWallet").value = addr || "";
+      document.getElementById("loginWallet").value = addr || "";
+    }
+
+    document.getElementById("btnConnectReg").onclick = async () => {
+      try {
+        const addr = await connectWallet();
+        await setWalletInputs(addr);
+        showMsg("Wallet connected: " + addr.slice(0, 10) + "...", false);
+      } catch (e) {
+        showMsg(e.message || "Connection failed", true);
+      }
+    };
+
+    document.getElementById("btnConnectLogin").onclick = async () => {
+      try {
+        const addr = await connectWallet();
+        await setWalletInputs(addr);
+        showMsg("Wallet connected.", false);
+      } catch (e) {
+        showMsg(e.message || "Connection failed", true);
+      }
+    };
+
+    document.getElementById("registerForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const wallet = document.getElementById("regWallet").value.trim();
+      if (!wallet) {
+        showMsg("Connect MetaMask first.", true);
+        return;
+      }
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, walletAddress: wallet }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg("Registration successful. You can now login and vote.", false);
+        } else {
+          showMsg(data.message || "Registration failed", true);
+        }
+      } catch (err) {
+        showMsg("Server error. Is the backend running?", true);
+      }
+    };
+
+    document.getElementById("btnLogin").onclick = async () => {
+      const wallet = document.getElementById("loginWallet").value.trim();
+      if (!wallet) {
+        showMsg("Connect MetaMask first.", true);
+        return;
+      }
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ walletAddress: wallet }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg("Login successful. Go to Vote to cast your vote.", false);
+          setTimeout(() => { window.location.href = "vote.html"; }, 1500);
+        } else {
+          showMsg(data.message || "Login failed. Register first.", true);
+        }
+      } catch (err) {
+        showMsg("Server error. Is the backend running?", true);
+      }
+    };
+
+    getCurrentAccount().then(setWalletInputs);
+  </script>
+</body>
+</html>

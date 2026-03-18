@@ -1,0 +1,233 @@
+/* Blockchain Secure E-Voting - Simple clean styles */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  min-height: 100vh;
+  color: #eee;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: #00d9ff;
+}
+
+.subtitle {
+  color: #8892b0;
+  font-size: 0.95rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #ccd6f6;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #a8b2d1;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #eee;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00d9ff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #00d9ff;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #00b8d9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-vote {
+  background: #64ffda;
+  color: #1a1a2e;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-vote:hover:not(:disabled) {
+  background: #4fd1b7;
+}
+
+.mt-1 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 1rem; }
+
+.links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.links a {
+  color: #00d9ff;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.wallet-info {
+  font-size: 0.85rem;
+  color: #8892b0;
+  word-break: break-all;
+  margin-bottom: 1rem;
+}
+
+.msg {
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.msg.error {
+  background: rgba(255, 100, 100, 0.2);
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  color: #ffb3b3;
+}
+
+.msg.success {
+  background: rgba(100, 255, 150, 0.15);
+  border: 1px solid rgba(100, 255, 150, 0.4);
+  color: #a8ffc8;
+}
+
+.candidate-list {
+  list-style: none;
+}
+
+.candidate-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.candidate-item .name {
+  font-weight: 500;
+  color: #ccd6f6;
+}
+
+.candidate-item .votes {
+  color: #64ffda;
+  font-size: 0.95rem;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.winner-badge {
+  background: #64ffda;
+  color: #1a1a2e;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.admin-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-section h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #a8b2d1;
+}

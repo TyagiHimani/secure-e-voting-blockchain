@@ -1,0 +1,30 @@
+{
+  "name": "blockchain-secure-evoting",
+  "version": "1.0.0",
+  "description": "Blockchain Based Secure E-Voting System - Academic Prototype",
+  "type": "module",
+  "scripts": {
+    "node": "hardhat node",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "server": "node backend/server.cjs",
+    "start": "node backend/server.cjs"
+  },
+  "keywords": [
+    "blockchain",
+    "evoting",
+    "solidity",
+    "hardhat"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-viem": "^3.0.0",
+    "hardhat": "^3.1.11",
+    "viem": "^2.43.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
