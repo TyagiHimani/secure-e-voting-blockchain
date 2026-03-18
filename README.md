@@ -1,17 +1,15 @@
-# Blockchain Secure E-Voting System
+# Secure E-Voting System using Blockchain
 
-A **master's level academic prototype** demonstrating a blockchain-based secure e-voting system. Votes are stored on-chain (Hardhat local blockchain), with one-voter-one-vote enforced by a Solidity smart contract.
+A full-stack decentralized voting application using Solidity, MetaMask, and Hardhat that ensures secure, transparent, and tamper-proof elections.
 
 ---
 
-## Project overview
-
-This system shows:
-
-- **Secure voting**: Votes are recorded as transactions on a blockchain.
-- **One voter, one vote**: The smart contract prevents duplicate votes per wallet address.
-- **Immutable storage**: Once a vote is cast, it cannot be altered or deleted.
-- **Automatic counting**: Vote totals are maintained and read directly from the contract.
+##  Key Highlights
+- Smart contract-based voting using Solidity
+- MetaMask integration for secure authentication and transaction signing
+- One-voter-one-vote enforced on blockchain
+- Real-time vote counting directly from smart contract
+- Full-stack implementation (Node.js, Express, HTML/CSS/JS)
 
 ---
 
